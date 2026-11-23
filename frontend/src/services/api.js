@@ -1,18 +1,18 @@
 const API_BASE_URL = 'http://localhost:3000/products';
 
-// Data produk awal sesuai contoh spesifikasi Slide 27 PPT
+// Data produk awal sesuai contoh spesifikasi PPT
 export const INITIAL_PRODUCTS = [
-  { id: 1, name: 'Pulpen', price: 5000 },
-  { id: 2, name: 'Buku Tulis', price: 12000 },
-  { id: 3, name: 'Spidol', price: 8000 },
-  { id: 4, name: 'Penggaris', price: 6000 },
-  { id: 5, name: 'Penghapus', price: 3000 },
+  { id: 1, name: 'Pulpen', price: 5000, description: 'Pulpen tinta hitam gel 0.5mm dengan aliran tinta lancar dan cepat kering.' },
+  { id: 2, name: 'Buku Tulis', price: 12000, description: 'Buku tulis bergaris 58 lembar dengan kertas tebal berkualitas tinggi.' },
+  { id: 3, name: 'Spidol', price: 8000, description: 'Spidol whiteboard warna hitam pekat, mudah dihapus tanpa bekas.' },
+  { id: 4, name: 'Penggaris', price: 6000, description: 'Penggaris mika bening presisi 30cm dengan angka anti luntur.' },
+  { id: 5, name: 'Penghapus', price: 3000, description: 'Penghapus pensil karet lembut bebas debu (dust-free) kualitas premium.' },
 ];
 
 /**
  * Service API untuk berinteraksi dengan backend Express (PORT 3000).
  * Dilengkapi fallback cerdas: jika backend offline/tidak dijalankan,
- * aplikasi tetap dapat berjalan secara mandiri (standalone) menggunakan state lokal.
+ * aplikasi tetap dapat berjalan secara mandiri (standalone) menggunakan state lokal/localStorage.
  */
 export const productService = {
   // GET: Mengambil seluruh produk
@@ -23,7 +23,22 @@ export const productService = {
       return await response.json();
     } catch (error) {
       console.warn('Backend Express tidak aktif atau gagal dijangkau, menggunakan data lokal:', error.message);
-      return null; // Penanda untuk fallback ke state lokal
+      return null;
+    }
+  },
+
+  // GET: Mengambil satu produk berdasarkan ID
+  async getById(id) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/${id}`);
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error('Gagal mengambil detail produk');
+      }
+      return await response.json();
+    } catch (error) {
+      console.warn(`Gagal memuat produk ID ${id} dari backend, memeriksa fallback:`, error.message);
+      return undefined; // Penanda untuk fallback ke state lokal
     }
   },
 
