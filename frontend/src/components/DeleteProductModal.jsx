@@ -1,78 +1,67 @@
 import React from 'react';
 import { Trash2, X } from 'lucide-react';
+import Badge from './atoms/Badge';
+import Button from './atoms/Button';
 
 /**
- * Komponen DeleteProductModal (Pop-up Hapus Produk?)
- * Sesuai rancangan Pop-up 3 pada Slide 27:
- * - Header: tombol close ✕
- * - Ikon Visual: Ikon trash merah
- * - Judul: "Hapus Produk?"
- * - Peringatan: "Produk yang dihapus tidak dapat dikembalikan."
- * - Kotak Info Produk: ID, Nama (tebal), Harga (biru)
- * - Aksi: "Batal" dan "Hapus Produk" (tombol merah)
+ * Komponen DeleteProductModal (Pop-up 3: Hapus Produk?)
+ * Menggunakan utility-first Tailwind CSS.
  */
 export default function DeleteProductModal({ product, onClose, onConfirm }) {
   if (!product) return null;
 
   const formattedPrice = `Rp${Number(product.price).toLocaleString('id-ID')}`;
 
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div className="modal-box delete-modal-box">
-        <div className="modal-header-simple">
-          <button 
-            type="button" 
-            className="btn-close" 
+    <div
+      className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-slate-100 text-center space-y-4">
+        <div className="flex justify-end">
+          <button
+            type="button"
             onClick={onClose}
-            aria-label="Tutup"
+            className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
-        <div className="delete-modal-content">
-          <div className="delete-icon-wrapper">
-            <Trash2 size={28} className="delete-icon" />
-          </div>
+        <div className="w-14 h-14 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto">
+          <Trash2 size={28} />
+        </div>
 
-          <h2 className="modal-title text-center">Hapus Produk?</h2>
-          <p className="delete-warning-text text-center">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">Hapus Produk?</h2>
+          <p className="text-xs text-slate-500 mt-1">
             Produk yang dihapus tidak dapat dikembalikan.
           </p>
+        </div>
 
-          <div className="product-to-delete-card">
-            <span className="badge-id">ID: {product.id}</span>
-            <div className="product-delete-details">
-              <span className="product-delete-name">{product.name}</span>
-              <span className="product-delete-price">{formattedPrice}</span>
-            </div>
+        {/* Ringkasan Item */}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex items-center justify-between text-left">
+          <Badge variant="default">ID: {product.id}</Badge>
+          <div className="text-right">
+            <p className="text-sm font-bold text-slate-900">{product.name}</p>
+            <p className="text-xs font-bold text-blue-600">{formattedPrice}</p>
           </div>
+        </div>
 
-          <div className="modal-footer delete-footer">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-            >
-              Batal
-            </button>
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={() => {
-                onConfirm(product.id);
-                onClose();
-              }}
-            >
-              Hapus Produk
-            </button>
-          </div>
+        <div className="pt-2 flex items-center gap-3">
+          <Button variant="secondary" onClick={onClose} className="flex-1">
+            Batal
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => {
+              onConfirm(product.id);
+              onClose();
+            }}
+            className="flex-1"
+          >
+            Hapus Produk
+          </Button>
         </div>
       </div>
     </div>
