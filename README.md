@@ -1,8 +1,8 @@
-# Tugas 3 Pemrograman Web: Aplikasi Manajemen Produk (React & Express REST API)
+# Tugas 4 Pemrograman Web: React Router, Tailwind CSS, dan Integrasi Backend
 
-Proyek tugas mata kuliah **Pemrograman Web (Minggu 12: Fundamental React)** Departemen Teknologi Informasi, Fakultas FTEIC, Institut Teknologi Sepuluh Nopember (ITS).
+Proyek tugas mata kuliah **Pemrograman Web (Pertemuan Minggu 13)** Departemen Teknologi Informasi, Fakultas FTEIC, Institut Teknologi Sepuluh Nopember (ITS).
 
-Proyek ini dibangun berdasarkan rancangan antarmuka dan spesifikasi teknis pada **Slide 27 PPT Fundamental React**, yang mengimplementasikan aplikasi **"Manajemen Produk"** lengkap dengan antarmuka berbasis komponen React yang terhubung ke backend Express REST API & Prisma ORM.
+Proyek ini merupakan kelanjutan dari proyek Manajemen Produk pada tugas sebelumnya. Pada tugas ini, aplikasi ditingkatkan dengan menambahkan **React Router (v7)** untuk navigasi antarhalaman berbasis URL (*Single-Page Application* tanpa *full page reload*) dan **Tailwind CSS (v4)** untuk menata antarmuka yang modern, konsisten, serta responsif, terintegrasi penuh dengan REST API backend Express & Prisma ORM.
 
 ---
 
@@ -10,106 +10,89 @@ Proyek ini dibangun berdasarkan rancangan antarmuka dan spesifikasi teknis pada 
 - **Nama**: Ashkhabil Abror Budihardjo
 - **NRP**: 5027251049
 - **Mata Kuliah**: Pemrograman Web (Teknologi Informasi - ITS)
-- **Topik**: Fundamental React (Week 12) & REST API Integration
+- **Topik**: Minggu 13 · Tugas 4 (React Router, Tailwind CSS, dan Integrasi Backend)
 
 ---
 
-## Fitur & Spesifikasi Sesuai Slide 27 PPT
+## Ketentuan Fitur & Implementasi (Sesuai PPT Minggu 13)
 
-### 1. Halaman Utama (Main Dashboard)
-- **Header Aplikasi:**
-  - Judul: `Manajemen Produk`
-  - Subjudul: `Kelola daftar produk dan harga dalam satu tempat.`
-  - Tombol Aksi: `+ Tambah Produk` (berwarna biru di kanan atas untuk memicu pembukaan pop-up penambahan produk).
-- **Pencarian & Counter:**
-  - Bilah pencarian dengan ikon kaca pembesar dan placeholder `Cari nama produk...`.
-  - Filter pencarian bersifat *live reactive* (langsung memperbarui kartu produk yang cocok saat mengetik).
-  - Badge counter jumlah produk: `{count} produk`.
-- **Kartu Produk (Product Cards Grid):**
-  - Grid responsif yang menampilkan kartu produk dengan data awal sesuai slide:
-    1. **ID: 1** - `Pulpen` - `Rp5.000`
-    2. **ID: 2** - `Buku Tulis` - `Rp12.000`
-    3. **ID: 3** - `Spidol` - `Rp8.000`
-    4. **ID: 4** - `Penggaris` - `Rp6.000`
-    5. **ID: 5** - `Penghapus` - `Rp3.000`
-  - Setiap kartu memiliki tombol aksi:
-    - `Edit` (outline biru) $\rightarrow$ membuka modal edit produk.
-    - `Hapus` (outline merah) $\rightarrow$ membuka modal konfirmasi hapus.
-- **Status Footer:**
-  - Menampilkan keterangan: `Menampilkan X dari Y produk`.
+### 1. Pengelolaan Produk (CRUD Tetap Berfungsi)
+- Seluruh fitur CRUD produk (**tambah, lihat, edit, dan hapus**) tetap berfungsi normal setelah penambahan routing dan Tailwind CSS.
+- Terhubung langsung ke REST API Express (`http://localhost:3000/products`) dengan database PostgreSQL Neon (Prisma ORM), serta dilengkapi mekanisme *smart fallback* lokal.
 
-### 2. Tiga Dialog Pop-up (Modals)
-1. **Pop-up 1: Tambah Produk (Create Modal)**
-   - Judul `Tambah Produk`, tombol tutup `✕`, deskripsi `Masukkan informasi produk baru.`.
-   - Input: **Nama Produk** (`Contoh: Pulpen`) dan **Harga (Rp)** (`Contoh: 5000`).
-   - Teks bantuan / validasi: `Harga harus lebih dari 0.`.
-   - Tombol: `Batal` dan `Simpan Produk`.
-2. **Pop-up 2: Edit Produk (Update Modal)**
-   - Judul `Edit Produk`, indikator `ID: {id}`, tombol tutup `✕`, deskripsi `Perbarui informasi produk yang dipilih.`.
-   - Form otomatis terisi dengan nilai produk yang dipilih.
-   - Tombol: `Batal` dan `Simpan Perubahan`.
-3. **Pop-up 3: Hapus Produk? (Delete Confirmation Modal)**
-   - Ikon tempat sampah merah (`trash icon`).
-   - Judul: `Hapus Produk?`.
-   - Peringatan: `Produk yang dihapus tidak dapat dikembalikan.`.
-   - Kotak ringkasan produk yang akan dihapus: menampilkan Badge ID, Nama Produk (tebal), dan Harga (biru).
-   - Tombol: `Batal` dan `Hapus Produk` (merah).
+### 2. Navigasi & Routing Berbasis URL (React Router v7)
+- **Shared Layout (`AppLayout` & `Outlet`):**
+  - Menggunakan `AppLayout` sebagai layout bersama yang mempertahankan `Navbar` tetap ada di setiap halaman, sementara konten berganti secara mulus melalui komponen `<Outlet />` (Slide 11 & 12).
+- **Navbar & Menu Aktif (`NavLink`):**
+  - Menggunakan `NavLink` dengan indikator status aktif (`isActive ? "bg-blue-50 text-blue-600 font-semibold" : ...`) untuk navigasi ke **Dashboard**, **Produk**, dan **Settings** (Slide 10 & 21).
+- **Halaman Dashboard (`/` & `/dashboard`):**
+  - Menampilkan ringkasan metrik produk: Total Produk, Rata-rata Harga, Produk Terendah, Produk Tertinggi, daftar produk terbaru, serta pintasan navigasi cepat (Slide 07 & 25).
+- **Halaman Detail Produk (`/products/:id`):**
+  - Rute dinamis menangkap parameter `id` dari URL menggunakan hook `useParams()` (Slide 13).
+  - Menampilkan rincian lengkap produk (ID, Nama, Harga terformat Rupiah, dan deskripsi).
+  - Menyediakan tautan `Link` untuk kembali ke daftar produk.
+  - Menangani kondisi jika produk tidak ditemukan (misal: `/products/999`) dengan menampilkan pesan peringatan yang jelas dan tombol kembali.
+- **Halaman Pengaturan / Settings (`/settings`):**
+  - Memungkinkan pengguna mengubah preferensi tata letak daftar produk antara **Grid Mode** (multi-kolom responsif) dan **List Mode** (susunan baris vertikal) (Slide 25).
+  - Pilihan tersimpan secara persisten pada `localStorage`.
+- **Halaman 404 Not Found (`*` Wildcard):**
+  - Menangkap seluruh URL yang tidak terdaftar menggunakan wildcard `<Route path="*" element={<NotFoundPage />} />` (Slide 14).
+  - Menampilkan pesan error bersahabat dan tautan pemulihan kembali ke halaman utama atau daftar produk.
+
+### 3. Tampilan Antarmuka Modern & Responsif (Tailwind CSS v4)
+- Menerapkan arsitektur **Atomic Design** (`components/atoms/Button.jsx`, `Input.jsx`, `Badge.jsx`) untuk penggunaan kembali komponen dengan varian konsisten (Slide 23).
+- Tata letak responsif menggunakan *mobile-first breakpoints* (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`) (Slide 22).
+- Palet warna konsisten (`text-blue-600`, `bg-blue-600`, `bg-slate-50`, `border-slate-200`) dan skala spacing yang terstruktur (Slide 18, 19, 20).
 
 ---
 
-## Penerapan Konsep Fundamental React Sesuai PPT
-
-Aplikasi ini dirancang mengikuti seluruh konsep yang diajarkan pada modul presentasi:
-
-| Konsep PPT | Implementasi dalam Kode | Lokasi File |
-|---|---|---|
-| **Deklaratif vs Imperatif** | UI dirender otomatis dari *state* (`products`, `searchQuery`, `editingProduct`) tanpa manipulasi manual `document.getElementById` / `innerHTML`. | `frontend/src/App.jsx` |
-| **Komponen Modular** | Memecah antarmuka menjadi komponen terisolasi sesuai batas tanggung jawab. | `frontend/src/components/` |
-| **JSX** | Sintaks markup deklaratif dibungkus dalam root fragment `<>...</>`, menggunakan penutupan tag mandiri (`<input />`, `<X />`), atribut `className`, dan format *camelCase* (`onClick`, `onChange`, `onSubmit`). | Seluruh file `.jsx` |
-| **Props & Event Handling** | Aliran data satu arah (*unidirectional data flow*): parent mengirim fungsi callback handler (`onOpenAdd`, `onEdit`, `onDelete`, `onSave`) via props ke child. Event handler diteruskan sebagai referensi fungsi (`onClick={handleClick}` atau `onClick={() => handleClick(id)}`). | `ProductCard.jsx`, `Header.jsx`, `SearchBar.jsx` |
-| **Rendering List & Key** | Merender daftar kartu menggunakan `.map()` dengan prop unik dan stabil `key={product.id}` (menghindari penggunaan index array). | `ProductList.jsx` |
-| **Conditional Rendering** | Menampilkan/menyembunyikan dialog pop-up (`AddProductModal`, `EditProductModal`, `DeleteProductModal`) dan state kosong pencarian hanya jika kondisi bernilai `true`. | `App.jsx`, `ProductList.jsx` |
-| **Siklus Update UI** | Alur *Trigger* (klik tombol/input) $\rightarrow$ *Render* (evaluasi fungsi komponen React) $\rightarrow$ *Commit* (Virtual DOM diffing ke real DOM browser). | Siklus `useState` & `useEffect` |
-
----
-
-## Arsitektur & Struktur Direktori
+## Struktur Direktori Proyek
 
 ```text
-Tugas 3/
+Tugas-3-React/
 ├── backend/                             # REST API Express & Prisma ORM
 │   ├── controllers/
-│   │   └── productController.js        # Controller logika bisnis CRUD & validasi
+│   │   └── productController.js        # Controller CRUD & validasi
 │   ├── prisma/
-│   │   ├── schema.prisma               # Definisi Model Product
-│   │   └── seed.js                     # Seeder data awal (5 produk sesuai PPT)
+│   │   ├── schema.prisma               # Skema database Prisma
+│   │   └── seed.js                     # Seeder 5 data awal
 │   ├── routes/
-│   │   └── productRoute.js             # Routing endpoint /products
-│   ├── .env                            # Variabel lingkungan database PostgreSQL Neon
-│   ├── index.js                        # Entry point server Express + Middleware CORS
-│   └── package.json                    # Dependensi backend
+│   │   └── productRoute.js             # Route /products
+│   ├── index.js                        # Server Express + CORS
+│   └── package.json
 │
-├── frontend/                            # Antarmuka Pengguna React (Vite)
+├── frontend/                            # Antarmuka React Router + Tailwind CSS
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── Header.jsx              # Judul, deskripsi, dan tombol "+ Tambah Produk"
-│   │   │   ├── SearchBar.jsx           # Input pencarian produk & badge counter
-│   │   │   ├── ProductCard.jsx         # Kartu item produk (ID, Nama, Harga, Edit, Hapus)
-│   │   │   ├── ProductList.jsx         # Grid kartu produk & status footer
-│   │   │   ├── AddProductModal.jsx     # Pop-up 1: Tambah Produk
-│   │   │   ├── EditProductModal.jsx    # Pop-up 2: Edit Produk
-│   │   │   └── DeleteProductModal.jsx  # Pop-up 3: Konfirmasi Hapus Produk
+│   │   │   ├── atoms/
+│   │   │   │   ├── Button.jsx          # Tombol varian (primary, secondary, danger, outline)
+│   │   │   │   ├── Input.jsx           # Input form dengan label & error helper
+│   │   │   │   └── Badge.jsx           # Badge label status & ID
+│   │   │   ├── Navbar.jsx              # Navigasi utama dengan NavLink & status API
+│   │   │   ├── Header.jsx              # Header halaman produk & tombol tambah
+│   │   │   ├── SearchBar.jsx           # Pencarian produk & counter
+│   │   │   ├── ProductCard.jsx         # Kartu produk (dukungan mode Grid & List + link Detail)
+│   │   │   ├── ProductList.jsx         # Wrapper grid responsif & footer counter
+│   │   │   ├── AddProductModal.jsx     # Pop-up tambah produk
+│   │   │   ├── EditProductModal.jsx    # Pop-up edit produk
+│   │   │   └── DeleteProductModal.jsx  # Pop-up konfirmasi hapus
+│   │   ├── layouts/
+│   │   │   └── AppLayout.jsx           # Shared layout dengan Navbar & Outlet
+│   │   ├── pages/
+│   │   │   ├── DashboardPage.jsx       # Halaman dashboard metrik & navigasi cepat
+│   │   │   ├── ProductsPage.jsx        # Halaman utama pengelolaan produk
+│   │   │   ├── ProductDetailPage.jsx   # Halaman detail rincian produk (/products/:id)
+│   │   │   ├── SettingsPage.jsx        # Halaman pengaturan preferensi layout (Grid/List)
+│   │   │   └── NotFoundPage.jsx        # Halaman 404 rute tidak dikenal
 │   │   ├── services/
-│   │   │   └── api.js                  # Service koneksi REST API dengan fallback cerdas
-│   │   ├── App.jsx                     # Komponen induk (State Management)
-│   │   ├── App.css                     # Desain styling antarmuka sesuai PPT
-│   │   ├── index.css                   # Global reset & typography
-│   │   └── main.jsx                    # Entry point React DOM
-│   ├── index.html                      # Template HTML utama
-│   ├── package.json                    # Dependensi frontend (React, Vite, Lucide-React)
-│   └── vite.config.js                  # Konfigurasi bundler Vite
+│   │   │   └── api.js                  # Service fetch API backend dengan fallback
+│   │   ├── App.jsx                     # Konfigurasi rute React Router & state global
+│   │   ├── index.css                   # Impor Tailwind CSS v4 (@import "tailwindcss")
+│   │   └── main.jsx                    # Entry point dengan BrowserRouter
+│   ├── vite.config.js                  # Konfigurasi bundler Vite dengan plugin Tailwind v4
+│   └── package.json                    # Dependensi frontend (react-router, tailwindcss)
 │
-├── package.json                         # Root helper scripts
+├── package.json                         # Root convenience scripts
 └── README.md                            # Dokumentasi lengkap proyek
 ```
 
@@ -117,27 +100,38 @@ Tugas 3/
 
 ## Cara Menjalankan Proyek
 
-### 1. Menjalankan Frontend (React)
-Buka terminal dan arahkan ke folder `frontend`:
+### 1. Menjalankan Frontend (React Router + Tailwind CSS)
+Buka terminal:
 ```bash
-cd "E:\Pemweb\Tugas kuliah\Tugas 3\frontend"
+cd frontend
 npm install
 npm run dev
 ```
-Buka browser pada URL yang ditampilkan (biasanya `http://localhost:5173`).
-> **Catatan:** Frontend memiliki fitur *smart fallback*. Jika backend tidak dinyalakan, antarmuka tetap berjalan 100% lancar menggunakan state lokal dengan 5 produk awal sesuai slide presentasi.
+Aplikasi akan berjalan di `http://localhost:5173`.
 
-### 2. Menjalankan Backend (Express REST API - Opsional untuk Sinkronisasi DB)
-Buka terminal kedua dan arahkan ke folder `backend`:
+### 2. Menjalankan Backend (Express REST API)
+Buka terminal kedua:
 ```bash
-cd "E:\Pemweb\Tugas kuliah\Tugas 3\backend"
+cd backend
 npm install
 npx prisma generate
 npm run dev
 ```
-Server Express akan aktif di `http://localhost:3000`. Frontend secara otomatis mendeteksi koneksi backend dan menyinkronkan data langsung ke database cloud PostgreSQL.
+Server backend berjalan di `http://localhost:3000`.
 
-Jika ingin mereset/mengisi database dengan 5 produk awal PPT:
-```bash
-npm run seed
-```
+---
+
+## Bukti Pengujian Fitur
+
+| Skenario | Hasil yang Diharapkan | Hasil Aktual |
+|---|---|---|
+| Navigasi Menu Navbar | Berpindah antar Dashboard (`/`), Produk (`/products`), dan Settings (`/settings`) tanpa reload halaman (*SPA*), indikator menu aktif menyala | Sesuai |
+| Halaman Dashboard | Menampilkan ringkasan statistik (total produk, rata-rata, harga terendah, harga tertinggi) dan daftar produk terbaru | Sesuai |
+| Halaman Daftar Produk | Menampilkan daftar produk dengan search filter real-time dan indikator jumlah produk | Sesuai |
+| Navigasi Detail Produk (`/products/:id`) | Mengklik tautan "Detail" pada salah satu produk membuka halaman detail produk yang sesuai (misal: `/products/2` menampilkan Buku Tulis) | Sesuai |
+| Detail Produk Tidak Ditemukan | Membuka ID produk yang tidak ada (misal: `/products/999`) menampilkan pesan error "Produk Tidak Ditemukan" dan tombol kembali | Sesuai |
+| Navigasi Halaman 404 | Mengakses URL sembarang (misal: `/alamat-salah`) menampilkan pesan "404: Halaman tidak ditemukan" dan link pemulihan | Sesuai |
+| Pengaturan Tata Letak (Settings) | Mengubah preferensi ke "List" membuat daftar produk pada `/products` tertata dalam baris horizontal; tersimpan di localStorage | Sesuai |
+| Operasi Tambah Produk (POST) | Pop-up tambah terbuka, validasi harga `> 0` bekerja, produk baru berhasil ditambahkan dan tersimpan ke backend | Sesuai |
+| Operasi Edit Produk (PUT) | Pop-up edit terbuka dengan data produk terisi, perubahan berhasil diperbarui | Sesuai |
+| Operasi Hapus Produk (DELETE) | Pop-up konfirmasi terbuka dengan ikon peringatan merah, produk terhapus dari daftar dan database | Sesuai |
